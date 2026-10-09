@@ -1,9 +1,11 @@
-from app.models.job import Job, JobCreate
+from typing import Any
+
+from app.models.job import Job, JobCreate, JobStatus
 
 from app.storage.job_repository import JobRepository
 from app.queue.job_queue import JobQueue, JobMessage
 
-from app.exceptions import JobNotFoundError
+from app.exceptions import JobNotFoundError, InvalidJobStatusError
 
 class JobService:
     def __init__(self, repository: JobRepository, queue: JobQueue):

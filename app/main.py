@@ -7,7 +7,7 @@ from app.storage.redis_job_repository import RedisJobRepository
 from app.queue.redis_job_queue import RedisJobQueue
 from app.services.job_service import JobService
 
-from app.api import job
+from app.api import jobs
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -29,7 +29,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Task Manager API", version="0.1.0", lifespan=lifespan)
 
-app.include_router(job.router)
+app.include_router(jobs.router)
 
 @app.get("/health")
 def health():
