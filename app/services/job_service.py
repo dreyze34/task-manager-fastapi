@@ -3,6 +3,8 @@ from app.models.job import Job, JobCreate
 from app.storage.job_repository import JobRepository
 from app.queue.job_queue import JobQueue, JobMessage
 
+from app.exceptions import JobNotFoundError
+
 class JobService:
     def __init__(self, repository: JobRepository, queue: JobQueue):
         self.repository = repository
@@ -27,6 +29,6 @@ class JobService:
     async def get_job(self, job_id: str) -> Job:
         job = await self.repository.get(job_id)
         if not job:
-            raise Exception
+            raise JobNotFoundError(job_id)
         return job
 

@@ -1,6 +1,8 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+
+from app.exceptions import JobNotFoundError
 
 from app.models.job import Job, JobCreate
 from app.queue.redis_job_queue import RedisJobQueue
@@ -26,9 +28,12 @@ def get_jobs(
 async def get_job(
     job_id: str,
     service: ServiceDep
-):
-    job = await service.get_job(job_id)
-    return job
+):  
+    try:
+        job = await service.get_job(job_id)
+        return job
+    except JobNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
 
 @router.post("", response_model=Job)
 async def create_job(
