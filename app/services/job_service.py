@@ -32,3 +32,6 @@ class JobService:
             raise JobNotFoundError(job_id)
         return job
 
+    async def get_jobs(self) -> list[Job]:
+        jobs = await self.repository.get_all()
+        return jobs

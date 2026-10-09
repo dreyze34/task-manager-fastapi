@@ -50,3 +50,10 @@ class RedisJobRepository:
         if not data:
             return
         return self._deserialize(data)
+
+    async def get_all(self):
+        jobs = []
+        async for key in self.redis.scan_iter(match="job:*", _type="hash"):
+            job = await self.redis.hgetall(key)
+            jobs.append(self._deserialize(job))
+        return jobs

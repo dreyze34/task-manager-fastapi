@@ -18,11 +18,12 @@ router = APIRouter(
 
 ServiceDep = Annotated[JobService, Depends(get_job_service)]
 
-@router.get("")
-def get_jobs(
+@router.get("", response_model=list[Job])
+async def get_jobs(
     service: ServiceDep
 ):
-    pass
+    jobs = await service.get_jobs()
+    return jobs
 
 @router.get("/{job_id}", response_model=Job)
 async def get_job(
