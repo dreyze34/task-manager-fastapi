@@ -5,6 +5,7 @@ from redis.asyncio import Redis
 
 from app.storage.redis_job_repository import RedisJobRepository
 from app.queue.redis_job_queue import RedisJobQueue
+from app.services.job_service import JobService
 
 from app.api import job
 
@@ -17,9 +18,11 @@ async def lifespan(app: FastAPI):
     try:
         await redis.ping()
 
-        app.state.repository = RedisJobRepository(redis=redis)
-        app.state.queue = RedisJobQueue(redis=redis, s_name="job:queue", wg_name="workers")
-        await app.state.queue.initialize()
+        repository = RedisJobRepository(redis)
+        queue = RedisJobQueue(redis, s_name="jobs:queue", wg_name="workers")
+        job_service = JobService(repository, queue)
+        app.state.job_service = job_service
+        await app.state.job_service.queue.initialize()
         yield
     finally:
         await redis.close()
