@@ -1,0 +1,9 @@
+from typing import Protocol
+
+from app.models.job import Job
+
+class JobRepository(Protocol):
+    async def create(self, job: Job) -> None: ...
+    async def get(self, job_id: str) -> Job | None: ...
+    async def update(self, job: Job) -> None: ...
+    

@@ -1,0 +1,32 @@
+from app.models.job import Job, JobCreate
+
+from app.storage.job_repository import JobRepository
+from app.queue.job_queue import JobQueue, JobMessage
+
+class JobService:
+    def __init__(self, repository: JobRepository, queue: JobQueue):
+        self.repository = repository
+        self.queue = queue
+
+    def validate_job(self, type: str, payload):
+        pass
+
+    async def create_job(self, request: JobCreate) -> Job:
+        self.validate_job(request.type, request.payload)
+
+        job = Job(
+            type=request.type,
+            payload=request.payload
+        )
+
+        await self.repository.create(job)
+        await self.queue.enqueue(str(job.id))
+
+        return job
+
+    async def get_job(self, job_id: str) -> Job:
+        job = await self.repository.get(job_id)
+        if not job:
+            raise Exception
+        return job
+
