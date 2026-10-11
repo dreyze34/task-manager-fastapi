@@ -4,8 +4,9 @@ from app.models.job import Job, JobCreate, JobStatus
 
 from app.storage.job_repository import JobRepository
 from app.queue.job_queue import JobQueue, JobMessage
+from app.workers.handlers import HANDLERS
 
-from app.exceptions import JobNotFoundError, InvalidJobStatusError
+from app.exceptions import JobNotFoundError, InvalidJobTypeError
 
 class JobService:
     def __init__(self, repository: JobRepository, queue: JobQueue):
@@ -13,7 +14,8 @@ class JobService:
         self.queue = queue
 
     def validate_job(self, type: str, payload):
-        pass
+        if type not in HANDLERS:
+            raise InvalidJobTypeError
 
     async def create_job(self, request: JobCreate) -> Job:
         self.validate_job(request.type, request.payload)
